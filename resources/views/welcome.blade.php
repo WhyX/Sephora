@@ -82,7 +82,7 @@
                         <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">Sort By:</span>
                     </div>
                     <div style="display: table-cell">
-                        <select class="browser-default" id="price_selector">
+                        <select class="browser-default filter" id="price_selector">
                             <option value="none" selected>None</option>
                             <option value="priceHighToLow">Price: High to Low</option>
                             <option value="priceLowToHigh">Price: Low to High</option>
@@ -90,7 +90,7 @@
                     </div>
                     <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">View:</span>
                     <div style="display: table-cell">
-                        <select class="browser-default" id="view_selector">
+                        <select class="browser-default filter" id="view_selector">
                             <option value="30" selected>30</option>
                             <option value="60">60</option>
                             <option value="120">120</option>
@@ -114,20 +114,29 @@
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
 <script>
-    $("#price_selector").change(function () {
-        retrieveProducts(1, this.value);
-    });
+    $('.filter').change(function () {
+        var priceVal = $('#price_selector').val();
+        var viewVal = $('#view_selector').val();
+        var postfix = 'page[number]=1';
+        console.log('priceVal: ', priceVal);
+        console.log('viewVal: ', viewVal);
+        if (priceVal === 'none') {
+            postfix = postfix + '&page[size]=' + viewVal;
+        } else {
+            priceVal = priceVal === 'priceHighToLow' ? '-price' : 'price';
+            postfix = postfix + '&page[size]=' + viewVal + '&sort=' + priceVal;
+        }
+        console.log('postfix: ', postfix);
 
-    $("#view_selector").change(function () {
-        retrieveProducts(1, this.value);
+        retrieveProducts(postfix);
     });
 
     $(function () {
-        retrieveProducts(1, 30);
+        retrieveProducts('page[number]=1&page[size]=30');
     });
 
-    function retrieveProducts(pageNumber, pageSize) {
-        var url = 'http://sephora-api-frontend-test.herokuapp.com/products?page[number]=' + pageNumber + '&page[size]=' + pageSize;
+    function retrieveProducts(postfix) {
+        var url = 'http://sephora-api-frontend-test.herokuapp.com/products?' + postfix;
         $.ajax({
             type: "GET",
             url: url,
