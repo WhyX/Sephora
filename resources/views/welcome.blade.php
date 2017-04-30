@@ -244,7 +244,7 @@
     function renderPage(pageNumber) {
         $('.progress').show();
         var postfix = constructParams(pageNumber);
-        var url = 'http://sephora-api-frontend-test.herokuapp.com/products?' + postfix;
+        var url = 'https://sephora-api-frontend-test.herokuapp.com/products?' + postfix;
         console.log('url: ', url);
         $.ajax({
             type: "GET",
@@ -281,7 +281,7 @@
                     var productCard = '<div class="col s4 m4"> ' +
                         '<div class="card">' +
                         '<div class="card-image">' +
-                        '<img src="http://placehold.it/200x200">' +
+                        '<img src="https://placehold.it/200x200">' +
                         '</div>' +
                         '<div class="card-content">' +
                         '<p style="font-weight: bold">' + name + '</p>' +
