@@ -160,7 +160,7 @@
     });
 
     function showAllCategories() {
-        $('#category_filter_form *').filter(':input').each(function(){
+        $('#category_filter_form *').filter(':input').each(function () {
             $(this).prop('checked', false);
         });
         retrieveProducts();
@@ -224,13 +224,13 @@
 
         var categoryVal = [];
 
-        $('#category_filter_form *').filter(':input').each(function(){
+        $('#category_filter_form *').filter(':input').each(function () {
             if ($(this).is(':checked')) {
                 categoryVal.push($(this).val());
             }
         });
 
-        if (categoryVal.length > 0){
+        if (categoryVal.length > 0) {
             var prefix = categoryVal.length > 1 ? '&filter[category_in]=' : '&filter[category_eq]=';
             params = params + prefix + categoryVal.toString();
         }
@@ -264,6 +264,14 @@
                     var name = productAttributes.name;
                     var category = productAttributes.category;
                     var price = productAttributes.price / 100;
+                    var availabilityDisplay;
+
+                    if (productAttributes.under_sale) {
+                        availabilityDisplay = productAttributes.sold_out === true ? '<p style="font-weight: bold; color: red">Out of Stock</p>' : '<p style="font-weight: bold; color: green">Available</p>';
+                    } else {
+                        availabilityDisplay = '<p style="font-weight: bold; color: darkgrey">Not for Sale</p>';
+                    }
+
 
                     var targetRow = $('#' + currRow);
                     var productCard = '<div class="col s4 m4"> ' +
@@ -275,6 +283,7 @@
                         '<p style="font-weight: bold">' + name + '</p>' +
                         '<p style="text-transform: capitalize">' + category + '</p>' +
                         '<p style="font-weight: bold">$' + price + '</p>' +
+                        availabilityDisplay +
                         '</div>' +
 //                        '<div class="card-action">' +
 //                        '<a href="#">View More</a>' +
