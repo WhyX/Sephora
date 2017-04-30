@@ -129,8 +129,11 @@
                 </div>
 
             </div>
-            <div class="row" style="margin-top: 65px" id="product_container">
 
+            <div class="row" style="margin-top: 65px" id="product_container">
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
             </div>
 
         </div>
