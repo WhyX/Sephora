@@ -12,6 +12,12 @@
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        a:hover {
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
@@ -23,51 +29,57 @@
                         <li>
                             <div class="collapsible-header">Category</div>
                             <div class="collapsible-body">
-                                <p>
-                                    <input type="checkbox" id="all_categories"/>
-                                    <label for="all_categories">All</label>
-                                </p>
-                                <p>
-                                    <input type="checkbox" id="brushes_category"/>
-                                    <label for="brushes_category">Brushes</label>
-                                </p>
-                                <p>
-                                    <input type="checkbox" id="tools_category"/>
-                                    <label for="tools_category">Tools</label>
-                                </p>
-                                <p>
-                                    <input type="checkbox" id="markup_category"/>
-                                    <label for="markup_category">Markup</label>
-                                </p>
+                                <div style="margin-bottom: 15px">
+                                    <a href="javascript:showAllCategories();"
+                                       style="text-decoration: none; cursor: pointer; color: black; font-size: 14px">Show
+                                        All</a>
+                                </div>
+
+                                <form>
+                                    <p>
+                                        <input type="checkbox" id="brushes_category"/>
+                                        <label for="brushes_category">Brushes</label>
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" id="tools_category"/>
+                                        <label for="tools_category">Tools</label>
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" id="markup_category"/>
+                                        <label for="markup_category">Markup</label>
+                                    </p>
+                                </form>
                             </div>
                         </li>
                         <li>
                             <div class="collapsible-header">Price</div>
                             <div class="collapsible-body">
-                                <p>
-                                    <input type="checkbox" id="price_under_25"/>
-                                    <label for="price_under_25">Under $25</label>
-                                </p>
-                                <p>
-                                    <input type="checkbox" id="price_25_to_50"/>
-                                    <label for="price_25_to_50">$25-$50</label>
-                                </p>
-                                <p>
-                                    <input type="checkbox" id="price_50_to_100"/>
-                                    <label for="price_50_to_100">$50-$100</label>
-                                </p>
-                                <p>
-                                    <input type="checkbox" id="price_100_to_150"/>
-                                    <label for="price_100_to_150">$100-$150</label>
-                                </p>
-                                <p>
-                                    <input type="checkbox" id="price_150_to_300"/>
-                                    <label for="price_150_to_300">$150-$300</label>
-                                </p>
-                                <p>
-                                    <input type="checkbox" id="price_above_300"/>
-                                    <label for="price_above_300">Above $300</label>
-                                </p>
+                                <form id="price_filter_form" action="#">
+                                    <p>
+                                        <input type="checkbox" id="price_under_25"/>
+                                        <label for="price_under_25">Under $25</label>
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" id="price_25_to_50"/>
+                                        <label for="price_25_to_50">$25-$50</label>
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" id="price_50_to_100"/>
+                                        <label for="price_50_to_100">$50-$100</label>
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" id="price_100_to_150"/>
+                                        <label for="price_100_to_150">$100-$150</label>
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" id="price_150_to_300"/>
+                                        <label for="price_150_to_300">$150-$300</label>
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" id="price_above_300"/>
+                                        <label for="price_above_300">Above $300</label>
+                                    </p>
+                                </form>
                             </div>
                         </li>
                     </ul>
@@ -82,7 +94,7 @@
                         <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">Sort By:</span>
                     </div>
                     <div style="display: table-cell">
-                        <select class="browser-default filter" id="price_selector">
+                        <select class="browser-default filter" id="sort_selector">
                             <option value="none" selected>None</option>
                             <option value="priceHighToLow">Price: High to Low</option>
                             <option value="priceLowToHigh">Price: Low to High</option>
@@ -96,6 +108,8 @@
                             <option value="120">120</option>
                             <option value="240">240</option>
                         </select>
+                    </div>
+                    <div style="display: table-cell; padding-left: 10px" id="pagination_container">
                     </div>
                 </div>
 
@@ -114,29 +128,74 @@
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
 <script>
+    $(function () {
+        retrieveProducts(1);
+    });
+
+    $('.price_filter_form :input').change(function () {
+
+    });
+
     $('.filter').change(function () {
-        var priceVal = $('#price_selector').val();
+        var currUrl = window.location.href;
+        var page = getParameterByName('page', currUrl);
+        retrieveProducts(page);
+    });
+
+    function showAllCategories() {
+        retrieveProducts();
+    }
+
+    function showPagination(links) {
+        var paginationContainer = $('#pagination_container');
+        paginationContainer.empty();
+
+        if ($.isEmptyObject(links)) {
+            return;
+        }
+        var pageSize = $('#view_selector').val();
+        var self = decodeURIComponent(links.self);
+        var last = decodeURIComponent(links.last);
+        var currPage = getParameterByName('page[number]', self);
+        var numOfPages = links.last === undefined ? currPage : getParameterByName('page[number]', last);
+        var pagination = '';
+
+        if (links.prev !== undefined) {
+            var prev = decodeURIComponent(links.prev);
+            var prevPage = getParameterByName('page[number]', prev);
+            var prevFunction = "retrieveProducts(" + prevPage + ")";
+            pagination = '<span><a href="#?page=' + prevPage + '" onclick="' + prevFunction + '"style="color: black; text-decoration: none">◀</a></span>';
+        }
+
+        for (var i = 0; i < numOfPages; i++) {
+            var page = i + 1;
+            var aFunction = "retrieveProducts(" + page + ")";
+            var fontColor = page == currPage ? '#FF1300' : '#AAAAAA';
+            pagination = pagination + '<span style="padding-left: 10px; padding-right: 10px"><a href="#?page=' + page + '" onclick="' + aFunction + '" style="text-decoration: none; color: ' + fontColor + '">' + page + '</a></span>';
+        }
+
+        if (links.next !== undefined) {
+            var next = decodeURIComponent(links.next);
+            var nextPage = getParameterByName('page[number]', next);
+            var nextFunction = "retrieveProducts(" + nextPage + ")";
+            pagination = pagination + '<span><a href="#?page=' + nextPage + '" onclick="' + nextFunction + '"style="color: black; text-decoration: none">▶</a></span>';
+        }
+
+        paginationContainer.append(pagination);
+    }
+
+    function retrieveProducts(pageNumber) {
+        var postfix = 'page[number]=' + pageNumber;
+        var sortVal = $('#sort_selector').val();
         var viewVal = $('#view_selector').val();
-        var postfix = 'page[number]=1';
-        console.log('priceVal: ', priceVal);
-        console.log('viewVal: ', viewVal);
-        if (priceVal === 'none') {
+        if (sortVal === 'none') {
             postfix = postfix + '&page[size]=' + viewVal;
         } else {
-            priceVal = priceVal === 'priceHighToLow' ? '-price' : 'price';
-            postfix = postfix + '&page[size]=' + viewVal + '&sort=' + priceVal;
+            sortVal = sortVal === 'priceHighToLow' ? '-price' : 'price';
+            postfix = postfix + '&page[size]=' + viewVal + '&sort=' + sortVal;
         }
-        console.log('postfix: ', postfix);
-
-        retrieveProducts(postfix);
-    });
-
-    $(function () {
-        retrieveProducts('page[number]=1&page[size]=30');
-    });
-
-    function retrieveProducts(postfix) {
         var url = 'http://sephora-api-frontend-test.herokuapp.com/products?' + postfix;
+        console.log('url: ', url);
         $.ajax({
             type: "GET",
             url: url,
@@ -151,7 +210,7 @@
                 var currRow = rowPrefix + rowIndex;
 
                 productContainer.empty();
-                for (i = 0; i < products.length; i++) {
+                for (var i = 0; i < products.length; i++) {
                     if (count == 0) {
                         productContainer.append('<div class="row" id="' + currRow + '"></div>')
                     }
@@ -186,6 +245,7 @@
                     }
                 }
 
+                showPagination(data.links);
             },
             error: function (xhr, status, error) {
                 alert(xhr.responseText);
@@ -193,6 +253,15 @@
         });
     }
 
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
 </script>
 </body>
 
