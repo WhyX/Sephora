@@ -17,78 +17,79 @@
         a:hover {
             opacity: 0.6;
         }
+
+        .collapsible-body {
+            padding: 1rem;
+        }
     </style>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row">
         <div class="col hide-on-small-only m3 l2">
-            <div id="side_nav_wrapper" style="top: 0px;">
-                <div style="height: 1px">
-                    <ul class="collapsible" data-collapsible="expandable">
-                        <li>
-                            <div class="collapsible-header">Category</div>
-                            <div class="collapsible-body">
-                                <div style="margin-bottom: 15px">
-                                    <a href="javascript:showAllCategories();"
-                                       style="text-decoration: none; cursor: pointer; color: black; font-size: 14px">Show
-                                        All</a>
-                                </div>
+            <div style="position: fixed; margin-top: 65px">
+                <ul class="collapsible" data-collapsible="expandable">
+                    <li>
+                        <div class="collapsible-header">Category</div>
+                        <div class="collapsible-body">
+                            <div style="margin-bottom: 15px">
+                                <a href="javascript:showAllCategories();"
+                                   style="text-decoration: none; cursor: pointer; color: black; font-size: 14px">Show
+                                    All</a>
+                            </div>
 
-                                <form>
-                                    <p>
-                                        <input type="checkbox" id="brushes_category"/>
-                                        <label for="brushes_category">Brushes</label>
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" id="tools_category"/>
-                                        <label for="tools_category">Tools</label>
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" id="markup_category"/>
-                                        <label for="markup_category">Markup</label>
-                                    </p>
-                                </form>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header">Price</div>
-                            <div class="collapsible-body">
-                                <form id="price_filter_form" action="#">
-                                    <p>
-                                        <input type="checkbox" id="price_under_25"/>
-                                        <label for="price_under_25">Under $25</label>
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" id="price_25_to_50"/>
-                                        <label for="price_25_to_50">$25-$50</label>
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" id="price_50_to_100"/>
-                                        <label for="price_50_to_100">$50-$100</label>
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" id="price_100_to_150"/>
-                                        <label for="price_100_to_150">$100-$150</label>
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" id="price_150_to_300"/>
-                                        <label for="price_150_to_300">$150-$300</label>
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" id="price_above_300"/>
-                                        <label for="price_above_300">Above $300</label>
-                                    </p>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                            <form>
+                                <p>
+                                    <input type="checkbox" id="brushes_category"/>
+                                    <label for="brushes_category">Brushes</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="tools_category"/>
+                                    <label for="tools_category">Tools</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="markup_category"/>
+                                    <label for="markup_category">Markup</label>
+                                </p>
+                            </form>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">Price</div>
+                        <div class="collapsible-body">
+                            <form id="price_filter_form" action="#">
+                                <p>
+                                    <input type="checkbox" id="price_under_25"/>
+                                    <label for="price_under_25">Under $25</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="price_25_to_50"/>
+                                    <label for="price_25_to_50">$25-$50</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="price_50_to_100"/>
+                                    <label for="price_50_to_100">$50-$100</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="price_100_to_150"/>
+                                    <label for="price_100_to_150">$100-$150</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="price_150_to_300"/>
+                                    <label for="price_150_to_300">$150-$300</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" id="price_above_300"/>
+                                    <label for="price_above_300">Above $300</label>
+                                </p>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
             </div>
-
         </div>
         <div class="col sm12 m9 l10">
-            <div class="row right" style="width: 100%">
+            <div class="row" style="position: fixed; right: 0; width: 100%; background-color: white; z-index: 999">
                 <div class="right" style="display: table; padding: 10px">
                     <div style="display: table-cell">
                         <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">Sort By:</span>
@@ -109,12 +110,12 @@
                             <option value="240">240</option>
                         </select>
                     </div>
-                    <div style="display: table-cell; padding-left: 10px" id="pagination_container">
+                    <div class="hide-on-small-only" style="display: table-cell; padding-left: 10px" id="pagination_container">
                     </div>
                 </div>
 
             </div>
-            <div class="row" id="product_container">
+            <div class="row" style="margin-top: 65px" id="product_container">
 
             </div>
 
