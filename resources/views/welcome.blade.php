@@ -140,11 +140,11 @@
     </div>
 
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+<script async src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script async src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
 <script>
     $(function () {
         renderPage(1);
@@ -242,6 +242,7 @@
     }
 
     function renderPage(pageNumber) {
+        $('.progress').show();
         var postfix = constructParams(pageNumber);
         var url = 'http://sephora-api-frontend-test.herokuapp.com/products?' + postfix;
         console.log('url: ', url);
@@ -280,7 +281,7 @@
                     var productCard = '<div class="col s4 m4"> ' +
                         '<div class="card">' +
                         '<div class="card-image">' +
-                        '<img src="http://placehold.it/350x150">' +
+                        '<img src="http://placehold.it/200x200">' +
                         '</div>' +
                         '<div class="card-content">' +
                         '<p style="font-weight: bold">' + name + '</p>' +
@@ -302,6 +303,7 @@
                         currRow = rowPrefix + rowIndex;
                     }
                 }
+                $('.progress').hide();
 
                 showPagination(data.links);
             },
