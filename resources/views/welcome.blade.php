@@ -15,6 +15,7 @@
 
     <style>
         a {
+            cursor: pointer;
             text-decoration: none !important;
         }
 
@@ -45,22 +46,22 @@
                         <div class="collapsible-header" style="font-weight: bold">Category</div>
                         <div class="collapsible-body">
                             <div style="margin-bottom: 15px">
-                                <a href="javascript:showAllCategories();"
-                                   style="text-decoration: none; cursor: pointer; color: black; font-size: 14px">Show
+                                <a href="#" onclick="showAllCategories()"
+                                   style="color: black; font-size: 14px">Show
                                     All</a>
                             </div>
 
-                            <form>
+                            <form id="category_filter_form">
                                 <p>
-                                    <input type="checkbox" id="brushes_category"/>
+                                    <input type="checkbox" id="brushes_category" value="brushes"/>
                                     <label for="brushes_category">Brushes</label>
                                 </p>
                                 <p>
-                                    <input type="checkbox" id="tools_category"/>
+                                    <input type="checkbox" id="tools_category" value="tools"/>
                                     <label for="tools_category">Tools</label>
                                 </p>
                                 <p>
-                                    <input type="checkbox" id="markup_category"/>
+                                    <input type="checkbox" id="markup_category" value="markup"/>
                                     <label for="markup_category">Markup</label>
                                 </p>
                             </form>
@@ -69,7 +70,7 @@
                     <li>
                         <div class="collapsible-header" style="font-weight: bold">Price</div>
                         <div class="collapsible-body">
-                            <form id="price_filter_form" action="#">
+                            <form id="price_filter_form">
                                 <p>
                                     <input type="checkbox" id="price_under_25"/>
                                     <label for="price_under_25">Under $25</label>
@@ -122,7 +123,8 @@
                             <option value="240">240</option>
                         </select>
                     </div>
-                    <div class="hide-on-small-only" style="display: table-cell; padding-left: 10px" id="pagination_container">
+                    <div class="hide-on-small-only" style="display: table-cell; padding-left: 10px"
+                         id="pagination_container">
                     </div>
                 </div>
 
@@ -145,8 +147,8 @@
         renderPage(1);
     });
 
-    $('.price_filter_form :input').change(function () {
-
+    $('form :input').change(function () {
+        renderPage(1);
     });
 
     $('#view_selector').change(function () {
@@ -154,15 +156,21 @@
     });
 
     $('#sort_selector').change(function () {
-        var paginationContainer = $('#pagination_container');
-        var page = paginationContainer.find('.active');
-        console.log(page);
-        var pageNumber = page.length === 0 ? 1 : page.text();
-        renderPage(pageNumber);
+        retrieveProducts();
     });
 
     function showAllCategories() {
-        renderPage();
+        $('#category_filter_form *').filter(':input').each(function(){
+            $(this).prop('checked', false);
+        });
+        retrieveProducts();
+    }
+
+    function retrieveProducts() {
+        var paginationContainer = $('#pagination_container');
+        var page = paginationContainer.find('.active');
+        var pageNumber = page.length === 0 ? 1 : page.text();
+        renderPage(pageNumber);
     }
 
     function showPagination(links) {
@@ -203,16 +211,35 @@
         paginationContainer.append(pagination);
     }
 
-    function renderPage(pageNumber) {
-        var postfix = 'page[number]=' + pageNumber;
+    function constructParams(pageNumber) {
+        var params = 'page[number]=' + pageNumber;
         var sortVal = $('#sort_selector').val();
         var viewVal = $('#view_selector').val();
         if (sortVal === 'none') {
-            postfix = postfix + '&page[size]=' + viewVal;
+            params = params + '&page[size]=' + viewVal;
         } else {
             sortVal = sortVal === 'priceHighToLow' ? '-price' : 'price';
-            postfix = postfix + '&page[size]=' + viewVal + '&sort=' + sortVal;
+            params = params + '&page[size]=' + viewVal + '&sort=' + sortVal;
         }
+
+        var categoryVal = [];
+
+        $('#category_filter_form *').filter(':input').each(function(){
+            if ($(this).is(':checked')) {
+                categoryVal.push($(this).val());
+            }
+        });
+
+        if (categoryVal.length > 0){
+            var prefix = categoryVal.length > 1 ? '&filter[category_in]=' : '&filter[category_eq]=';
+            params = params + prefix + categoryVal.toString();
+        }
+
+        return params;
+    }
+
+    function renderPage(pageNumber) {
+        var postfix = constructParams(pageNumber);
         var url = 'http://sephora-api-frontend-test.herokuapp.com/products?' + postfix;
         console.log('url: ', url);
         $.ajax({
@@ -267,7 +294,7 @@
                 showPagination(data.links);
             },
             error: function (xhr, status, error) {
-                alert(xhr.responseText);
+                alert(error);
             }
         });
     }
