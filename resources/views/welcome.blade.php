@@ -14,12 +14,24 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <style>
+        a {
+            text-decoration: none !important;
+        }
+
         a:hover {
             opacity: 0.6;
         }
 
         .collapsible-body {
             padding: 1rem;
+        }
+
+        a.active {
+            color: #FF1300;
+        }
+
+        a.inactive {
+            color: #AAAAAA;
         }
     </style>
 </head>
@@ -30,7 +42,7 @@
             <div style="position: fixed; margin-top: 65px">
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
-                        <div class="collapsible-header">Category</div>
+                        <div class="collapsible-header" style="font-weight: bold">Category</div>
                         <div class="collapsible-body">
                             <div style="margin-bottom: 15px">
                                 <a href="javascript:showAllCategories();"
@@ -55,7 +67,7 @@
                         </div>
                     </li>
                     <li>
-                        <div class="collapsible-header">Price</div>
+                        <div class="collapsible-header" style="font-weight: bold">Price</div>
                         <div class="collapsible-body">
                             <form id="price_filter_form" action="#">
                                 <p>
@@ -95,7 +107,7 @@
                         <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">Sort By:</span>
                     </div>
                     <div style="display: table-cell">
-                        <select class="browser-default filter" id="sort_selector">
+                        <select class="browser-default" id="sort_selector">
                             <option value="none" selected>None</option>
                             <option value="priceHighToLow">Price: High to Low</option>
                             <option value="priceLowToHigh">Price: Low to High</option>
@@ -103,7 +115,7 @@
                     </div>
                     <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">View:</span>
                     <div style="display: table-cell">
-                        <select class="browser-default filter" id="view_selector">
+                        <select class="browser-default" id="view_selector">
                             <option value="30" selected>30</option>
                             <option value="60">60</option>
                             <option value="120">120</option>
@@ -130,21 +142,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
 <script>
     $(function () {
-        retrieveProducts(1);
+        renderPage(1);
     });
 
     $('.price_filter_form :input').change(function () {
 
     });
 
-    $('.filter').change(function () {
-        var currUrl = window.location.href;
-        var page = getParameterByName('page', currUrl);
-        retrieveProducts(page);
+    $('#view_selector').change(function () {
+        renderPage(1);
+    });
+
+    $('#sort_selector').change(function () {
+        var paginationContainer = $('#pagination_container');
+        var page = paginationContainer.find('.active');
+        console.log(page);
+        var pageNumber = page.length === 0 ? 1 : page.text();
+        renderPage(pageNumber);
     });
 
     function showAllCategories() {
-        retrieveProducts();
+        renderPage();
     }
 
     function showPagination(links) {
@@ -164,28 +182,28 @@
         if (links.prev !== undefined) {
             var prev = decodeURIComponent(links.prev);
             var prevPage = getParameterByName('page[number]', prev);
-            var prevFunction = "retrieveProducts(" + prevPage + ")";
-            pagination = '<span><a href="#?page=' + prevPage + '" onclick="' + prevFunction + '"style="color: black; text-decoration: none">◀</a></span>';
+            var prevFunction = "renderPage(" + prevPage + ")";
+            pagination = '<span><a href="#" onclick="' + prevFunction + '"style="color: black">◀</a></span>';
         }
 
         for (var i = 0; i < numOfPages; i++) {
             var page = i + 1;
-            var aFunction = "retrieveProducts(" + page + ")";
-            var fontColor = page == currPage ? '#FF1300' : '#AAAAAA';
-            pagination = pagination + '<span style="padding-left: 10px; padding-right: 10px"><a href="#?page=' + page + '" onclick="' + aFunction + '" style="text-decoration: none; color: ' + fontColor + '">' + page + '</a></span>';
+            var aFunction = "renderPage(" + page + ")";
+            var className = page == currPage ? 'active' : 'inactive';
+            pagination = pagination + '<span style="padding-left: 10px; padding-right: 10px"><a class="' + className + '" href="#" onclick="' + aFunction + '">' + page + '</a></span>';
         }
 
         if (links.next !== undefined) {
             var next = decodeURIComponent(links.next);
             var nextPage = getParameterByName('page[number]', next);
-            var nextFunction = "retrieveProducts(" + nextPage + ")";
-            pagination = pagination + '<span><a href="#?page=' + nextPage + '" onclick="' + nextFunction + '"style="color: black; text-decoration: none">▶</a></span>';
+            var nextFunction = "renderPage(" + nextPage + ")";
+            pagination = pagination + '<span><a href="#" onclick="' + nextFunction + '"style="color: black">▶</a></span>';
         }
 
         paginationContainer.append(pagination);
     }
 
-    function retrieveProducts(pageNumber) {
+    function renderPage(pageNumber) {
         var postfix = 'page[number]=' + pageNumber;
         var sortVal = $('#sort_selector').val();
         var viewVal = $('#view_selector').val();
