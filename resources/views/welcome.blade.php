@@ -224,7 +224,7 @@
             var page = i + 1;
             var aFunction = "renderPage(" + page + ")";
             var className = page == currPage ? 'active' : 'inactive';
-            pagination = pagination + '<span style="padding-left: 10px; padding-right: 10px"><a class="' + className + '" href="#" onclick="' + aFunction + '">' + page + '</a></span>';
+            pagination = pagination + '<span style="padding-left: 10px; padding-right: 10px"><a class="' + className + '" data-value="' + page + '" href="#" onclick="' + aFunction + '">' + page + '</a></span>';
         }
 
         if (links.next !== undefined) {
@@ -297,9 +297,9 @@
                         availabilityDisplay = '<p style="font-weight: bold; color: darkgrey">Not for Sale</p>';
                     }
 
-                    var productCard = '<div class="product">' +
+                    var productCard = '<div class="product" id="product_' + i + '">' +
                         '<div>' +
-                        '<button class="viewBtn" onclick="viewProduct(' + id + ')">View</button>' +
+                        '<button class="viewBtn" value="' + id + '" onclick="viewProduct(' + id + ')">View</button>' +
                         '<img src="https://placehold.it/230x150">' +
                         '</div>' +
                         '<div>' +
