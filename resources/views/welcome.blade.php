@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Sephora</title>
+    <title>SephoraTest</title>
 
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -34,13 +34,50 @@
         a.inactive {
             color: #AAAAAA;
         }
+
+        .product {
+            width: 250px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
 <div class="container-fluid">
+    <div class="row right">
+        <div style="display: table; padding: 10px">
+            <div style="display: table-cell">
+                <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">Sort By:</span>
+            </div>
+            <div style="display: table-cell">
+                <select class="browser-default" id="sort_selector">
+                    <option value="none" selected>None</option>
+                    <option value="priceHighToLow">Price: High to Low</option>
+                    <option value="priceLowToHigh">Price: Low to High</option>
+                </select>
+            </div>
+            <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">View:</span>
+            <div style="display: table-cell">
+                <select class="browser-default" id="view_selector">
+                    <option value="30" selected>30</option>
+                    <option value="60">60</option>
+                    <option value="120">120</option>
+                    <option value="240">240</option>
+                </select>
+            </div>
+            <div style="display: table-cell; padding-left: 10px"
+                 id="pagination_container">
+            </div>
+        </div>
+
+    </div>
     <div class="row">
-        <div class="col hide-on-small-only m3 l2">
-            <div style="position: fixed; margin-top: 65px">
+        <div class="col s5 m3 l2">
+            <div style="margin-top: 15px">
                 <ul class="collapsible" data-collapsible="expandable">
                     <li>
                         <div class="collapsible-header" style="font-weight: bold">Category</div>
@@ -101,36 +138,8 @@
                 </ul>
             </div>
         </div>
-        <div class="col sm12 m9 l10">
-            <div class="row" style="position: fixed; right: 0; width: 100%; background-color: white; z-index: 999">
-                <div class="right" style="display: table; padding: 10px">
-                    <div style="display: table-cell">
-                        <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">Sort By:</span>
-                    </div>
-                    <div style="display: table-cell">
-                        <select class="browser-default" id="sort_selector">
-                            <option value="none" selected>None</option>
-                            <option value="priceHighToLow">Price: High to Low</option>
-                            <option value="priceLowToHigh">Price: Low to High</option>
-                        </select>
-                    </div>
-                    <span style="padding-left: 10px; padding-right: 10px; font-weight: bold">View:</span>
-                    <div style="display: table-cell">
-                        <select class="browser-default" id="view_selector">
-                            <option value="30" selected>30</option>
-                            <option value="60">60</option>
-                            <option value="120">120</option>
-                            <option value="240">240</option>
-                        </select>
-                    </div>
-                    <div class="hide-on-small-only" style="display: table-cell; padding-left: 10px"
-                         id="pagination_container">
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="row" style="margin-top: 65px" id="product_container">
+        <div class="col s7 m9 l10">
+            <div class="row" id="product_container" style="display: flex; flex-wrap: wrap">
                 <div class="progress">
                     <div class="indeterminate"></div>
                 </div>
@@ -148,6 +157,7 @@
 <script>
     $(function () {
         renderPage(1);
+        $(".button-collapse").sideNav();
     });
 
     $('form :input').change(function () {
@@ -260,16 +270,9 @@
                 console.log(data);
                 var productContainer = $('#product_container');
                 var products = data.data;
-                var rowPrefix = 'row_';
-                var rowIndex = 0;
-                var count = 0;
-                var currRow = rowPrefix + rowIndex;
 
                 productContainer.empty();
                 for (var i = 0; i < products.length; i++) {
-                    if (count == 0) {
-                        productContainer.append('<div class="row" id="' + currRow + '"></div>')
-                    }
                     var productAttributes = products[i].attributes;
                     var name = productAttributes.name;
                     var category = productAttributes.category;
@@ -282,31 +285,20 @@
                         availabilityDisplay = '<p style="font-weight: bold; color: darkgrey">Not for Sale</p>';
                     }
 
-                    var targetRow = $('#' + currRow);
-                    var productCard = '<div class="col s4 m4"> ' +
-                        '<div class="card">' +
-                        '<div class="card-image">' +
-                        '<img src="https://placehold.it/200x200">' +
+                    var targetRow = productContainer;
+
+                    var productCard = '<div class="product">' +
+                        '<div>' +
+                        '<img src="https://placehold.it/230x150">' +
                         '</div>' +
-                        '<div class="card-content">' +
+                        '<div>' +
                         '<p style="font-weight: bold">' + name + '</p>' +
                         '<p style="text-transform: capitalize">' + category + '</p>' +
                         '<p style="font-weight: bold">$' + price + '</p>' +
                         availabilityDisplay +
                         '</div>' +
-//                        '<div class="card-action">' +
-//                        '<a href="#">View More</a>' +
-//                        '</div>' +
-                        '</div>' +
                         '</div>';
                     targetRow.append(productCard);
-
-                    count++;
-                    if (count == 3) {
-                        count = 0;
-                        rowIndex++;
-                        currRow = rowPrefix + rowIndex;
-                    }
                 }
                 $('.progress').hide();
 
