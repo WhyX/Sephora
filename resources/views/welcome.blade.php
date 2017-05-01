@@ -44,6 +44,20 @@
         p {
             margin: 0;
         }
+
+        .viewBtn {
+            position: absolute;
+            background: white;
+            border: none;
+        }
+
+        .viewBtn:active {
+            background: white;
+        }
+
+        .viewBtn:focus {
+            background: darkgrey;
+        }
     </style>
 </head>
 <body>
@@ -139,7 +153,7 @@
             </div>
         </div>
         <div class="col s7 m9 l10">
-            <div class="row" id="product_container" style="display: flex; flex-wrap: wrap">
+            <div class="row" id="product_container" style="display: flex; flex-wrap: wrap; justify-content: center">
                 <div class="progress">
                     <div class="indeterminate"></div>
                 </div>
@@ -157,7 +171,6 @@
 <script>
     $(function () {
         renderPage(1);
-        $(".button-collapse").sideNav();
     });
 
     $('form :input').change(function () {
@@ -263,9 +276,7 @@
         var url = 'https://sephora-api-frontend-test.herokuapp.com/products?' + postfix;
         console.log('url: ', url);
         $.ajax({
-            type: "GET",
             url: url,
-            contentType: false,
             success: function (data) {
                 console.log(data);
                 var productContainer = $('#product_container');
@@ -274,6 +285,7 @@
                 productContainer.empty();
                 for (var i = 0; i < products.length; i++) {
                     var productAttributes = products[i].attributes;
+                    var id = products[i].id;
                     var name = productAttributes.name;
                     var category = productAttributes.category;
                     var price = productAttributes.price / 100;
@@ -285,10 +297,9 @@
                         availabilityDisplay = '<p style="font-weight: bold; color: darkgrey">Not for Sale</p>';
                     }
 
-                    var targetRow = productContainer;
-
                     var productCard = '<div class="product">' +
                         '<div>' +
+                        '<button class="viewBtn" onclick="viewProduct(' + id + ')">View</button>' +
                         '<img src="https://placehold.it/230x150">' +
                         '</div>' +
                         '<div>' +
@@ -298,7 +309,7 @@
                         availabilityDisplay +
                         '</div>' +
                         '</div>';
-                    targetRow.append(productCard);
+                    productContainer.append(productCard);
                 }
                 $('.progress').hide();
 
@@ -308,6 +319,53 @@
                 alert(error);
             }
         });
+    }
+
+    function viewProduct(id) {
+        var url = 'https://sephora-api-frontend-test.herokuapp.com/products/' + id;
+        $('.progress').show();
+        $.ajax({
+            url: url,
+            success: function (data) {
+                var productContainer = $('#product_container');
+                productContainer.empty();
+
+                var product = data.data;
+
+                var productAttributes = product.attributes;
+                var name = productAttributes.name;
+                var category = productAttributes.category;
+                var price = productAttributes.price / 100;
+                var salePrice = productAttributes.sale_price / 100
+                var availabilityDisplay;
+
+                if (productAttributes.under_sale) {
+                    availabilityDisplay = productAttributes.sold_out === true ? '<p style="font-weight: bold; color: red">Out of Stock</p>' : '<p style="font-weight: bold; color: green">Available</p>';
+                } else {
+                    availabilityDisplay = '<p style="font-weight: bold; color: darkgrey">Not for Sale</p>';
+                }
+
+                var productCard = '<div class="product">' +
+                    '<div>' +
+                    '<button class="viewBtn" onclick="renderPage(1)">X</button>' +
+                    '<img src="https://placehold.it/230x150">' +
+                    '</div>' +
+                    '<div>' +
+                    '<p style="font-weight: bold">' + name + '</p>' +
+                    '<p style="text-transform: capitalize">' + category + '</p>' +
+                    '<p style="font-weight: bold">$' + price + '</p>' +
+                    '<p style="font-weight: bold">Sale Price: $' + salePrice + '</p>' +
+                    availabilityDisplay +
+                    '</div>' +
+                    '</div>';
+
+                productContainer.append(productCard);
+                $('.progress').hide();
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        })
     }
 
     function getParameterByName(name, url) {
