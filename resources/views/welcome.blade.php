@@ -72,28 +72,28 @@
                         <div class="collapsible-body">
                             <form id="price_filter_form">
                                 <p>
-                                    <input type="checkbox" id="price_under_25"/>
-                                    <label for="price_under_25">Under $25</label>
+                                    <input name="price" type="radio" id="price_under_15" value="1500"/>
+                                    <label for="price_under_15">Under $15</label>
                                 </p>
                                 <p>
-                                    <input type="checkbox" id="price_25_to_50"/>
-                                    <label for="price_25_to_50">$25-$50</label>
+                                    <input name="price" type="radio" id="price_under_30" value="3000"/>
+                                    <label for="price_under_30">Under $30</label>
                                 </p>
                                 <p>
-                                    <input type="checkbox" id="price_50_to_100"/>
-                                    <label for="price_50_to_100">$50-$100</label>
+                                    <input name="price" type="radio" id="price_under_50" value="5000"/>
+                                    <label for="price_under_50">Under $50</label>
                                 </p>
                                 <p>
-                                    <input type="checkbox" id="price_100_to_150"/>
-                                    <label for="price_100_to_150">$100-$150</label>
+                                    <input name="price" type="radio" id="price_under_100" value="10000"/>
+                                    <label for="price_under_100">Under $100</label>
                                 </p>
                                 <p>
-                                    <input type="checkbox" id="price_150_to_300"/>
-                                    <label for="price_150_to_300">$150-$300</label>
+                                    <input name="price" type="radio" id="price_under_250" value="25000"/>
+                                    <label for="price_under_250">Under $250</label>
                                 </p>
                                 <p>
-                                    <input type="checkbox" id="price_above_300"/>
-                                    <label for="price_above_300">Above $300</label>
+                                    <input name="price" type="radio" id="price_under_1000" value="100000"/>
+                                    <label for="price_under_1000">Under $1000</label>
                                 </p>
                             </form>
                         </div>
@@ -238,6 +238,12 @@
             params = params + prefix + categoryVal.toString();
         }
 
+        $('#price_filter_form *').filter(':input').each(function () {
+            if ($(this).is(':checked')) {
+                params = params + '&filter[price_lt]=' + $(this).val();
+            }
+        });
+
         return params;
     }
 
@@ -275,7 +281,6 @@
                     } else {
                         availabilityDisplay = '<p style="font-weight: bold; color: darkgrey">Not for Sale</p>';
                     }
-
 
                     var targetRow = $('#' + currRow);
                     var productCard = '<div class="col s4 m4"> ' +
